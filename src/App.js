@@ -1,65 +1,42 @@
-import React, { Component } from 'react';
+import React from 'react'
+import TodoItem from "./TodoItem"
+import todosData from "./todosData"
 
-class App extends Component {
-  constructor(props){
-    super(props);
-
-    this.state = {
-      newItem: "",
-      list: []
+class App extends React.Component{
+    constructor(){
+        super()
+        this.state = {
+            todos: todosData
+        }
+        this.handleChange = this.handleChange.bind(this)
     }
-  }
 
-  updateInput(key, value){
-    //update react state
-    this.setState({
-      [key]: value
-    });
-  }
+    handleChange(id){
+       this.setState(prevState => {
+           const updatedTodos = prevState.todos.map(todo => {
+               if(todo.id === id){
+                       return{
+                           ...todo,
+                           completed: !todo.completed
+                       }
+               }
+               return todo
 
-  addItem() {
-    //create item with uniqu id
-    const newItem = {
-      id: 1 + Math.random(),
-      value: this.state.newItem.slice()
-    };
+           })
+           return{
+               todos: updatedTodos
+           }
+       })
+    }
 
-    //copy of current list of items
-    const list = {...this.state.list};
-
-    //add new item to list
-    list.push(newItem);
-
-    //update state with new list and reset newItem input
-    this.setState({
-      list,
-      newItem:""
-    });
-  }
-
-
-  render() {
-    return (
-      <div className = "App">
-        <div>
-          Add an Item...
-          <br/>
-          <input 
-            type="text"
-            placehold="Type item here..."
-            value = { this.state.newItem }
-            onChange = {e => this.updateInput("newItem", e.target.value)}
-          />
-          <button
-            onClick={() => this.addItem()}
-          >
-            Add
-          </button>
-        </div>
-      </div>
-    );
-  }
+    render(){
+        const todoItems = this.state.todos.map(item => <TodoItem key={item.id} item={item} handleChange={this.handleChange}/>)
+        return (  
+            <div className="todo-list">
+                {todoItems}
+            </div>
+        )
+    }
 }
 
-
-export default App;
+export default App
